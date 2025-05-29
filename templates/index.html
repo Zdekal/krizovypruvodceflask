@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Krizový průvodce</title>
+</head>
+<body>
+    <h1>Projekty</h1>
+    <a href="{{ url_for('new_project') }}">+ Nový projekt</a>
+    <ul>
+    {% for project in projects %}
+        <li><strong>{{ project.name }}</strong>: {{ project.description }}</li>
+    {% else %}
+        <li>Žádné projekty</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

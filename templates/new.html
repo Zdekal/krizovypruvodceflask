@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Nový projekt</title>
+</head>
+<body>
+    <h1>Nový projekt</h1>
+    <form method="post">
+        <label>Název:<br><input type="text" name="name" required></label><br><br>
+        <label>Popis:<br><textarea name="description"></textarea></label><br><br>
+        <button type="submit">Uložit</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">Zpět na seznam</a></p>
+</body>
+</html>
