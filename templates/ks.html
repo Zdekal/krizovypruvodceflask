@@ -5,65 +5,46 @@
     <title>Krizový štáb</title>
     <style>
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         h1, h2 {
-            color: #2c3e50;
+            text-align: center;
         }
-        form {
-            background: white;
-            padding: 20px;
+        form, table {
+            width: 100%;
             margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
         }
-        form input, form textarea {
+        input, textarea {
             width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            margin-bottom: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
         }
         button {
+            padding: 10px 15px;
+            margin-top: 10px;
             background-color: #007BFF;
             color: white;
-            padding: 10px 16px;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-            max-width: 600px;
+        table {
+            border-collapse: collapse;
         }
-        li {
-            background: white;
-            margin-bottom: 12px;
-            padding: 16px;
-            border-radius: 6px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
         }
-        li strong {
-            font-size: 1.1em;
-        }
-        a {
-            color: red;
-            text-decoration: none;
-            font-weight: bold;
+        .actions {
+            display: flex;
+            gap: 10px;
         }
     </style>
 </head>
@@ -71,14 +52,48 @@
     <h1>Členové krizového štábu</h1>
 
     <form method="post">
-        <label>Jméno</label>
-        <input name="jmeno" required>
-        <label>Telefon</label>
-        <input name="telefon">
-        <label>Email</label>
-        <input name="email">
-        <label>Funkce v KŠ</label>
-        <input name="funkce">
-        <label>Hlavní zodpovědnosti</label>
-        <textarea name="zodpovednost" rows="3"></textarea>
-        <button
+        <input name="jmeno" placeholder="Jméno" required>
+        <input name="telefon" placeholder="Telefon">
+        <input name="email" placeholder="Email">
+        <input name="funkce" placeholder="Funkce v KŠ">
+        <textarea name="zodpovednost" placeholder="Hlavní zodpovědnosti"></textarea>
+        <button type="submit">Vložit nového člena KŠ</button>
+    </form>
+
+    <h2>Aktuální členové</h2>
+    {% if ks_data %}
+    <form method="post" action="/update">
+        <table>
+            <thead>
+                <tr>
+                    <th>Jméno</th>
+                    <th>Telefon</th>
+                    <th>Email</th>
+                    <th>Funkce</th>
+                    <th>Zodpovědnosti</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i, member in enumerate(ks_data) %}
+                <tr>
+                    <td><input name="jmeno_{{ i }}" value="{{ member.jmeno }}"></td>
+                    <td><input name="telefon_{{ i }}" value="{{ member.telefon }}"></td>
+                    <td><input name="email_{{ i }}" value="{{ member.email }}"></td>
+                    <td><input name="funkce_{{ i }}" value="{{ member.funkce }}"></td>
+                    <td><textarea name="zodpovednost_{{ i }}">{{ member.zodpovednost }}</textarea></td>
+                    <td class="actions">
+                        <a href="{{ url_for('delete_member', index=i) }}">🗑 Smazat</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">💾 Uložit změny</button>
+    </form>
+    <button onclick="window.print()">🖨️ Tisk / Uložit jako PDF</button>
+    {% else %}
+        <p>Žádní členové</p>
+    {% endif %}
+</body>
+</html>
