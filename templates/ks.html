@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Krizový štáb</title>
+</head>
+<body>
+    <h1>Členové krizového štábu</h1>
+
+    <form method="post">
+        <input name="jmeno" placeholder="Jméno" required><br>
+        <input name="telefon" placeholder="Telefon"><br>
+        <input name="email" placeholder="Email"><br>
+        <input name="funkce" placeholder="Funkce v KŠ"><br>
+        <textarea name="zodpovednost" placeholder="Hlavní zodpovědnosti"></textarea><br>
+        <button type="submit">Vložit nového člena KŠ</button>
+    </form>
+
+    <h2>Aktuální členové</h2>
+    <ul>
+    {% for member in ks_data %}
+        <li><strong>{{ member.jmeno }}</strong> – {{ member.funkce }}<br>
+        📞 {{ member.telefon }} | ✉️ {{ member.email }}<br>
+        🧾 {{ member.zodpovednost }}<br>
+        <a href="{{ url_for('delete_member', index=loop.index0) }}">🗑 Smazat</a></li>
+    {% else %}
+        <li>Žádní členové</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
 
