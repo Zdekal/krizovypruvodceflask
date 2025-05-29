@@ -3,30 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>Krizový štáb</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        li {
+            background: white;
+            margin-bottom: 12px;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+        li strong {
+            font-size: 1.1em;
+        }
+        a {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Členové krizového štábu</h1>
 
     <form method="post">
-        <input name="jmeno" placeholder="Jméno" required><br>
-        <input name="telefon" placeholder="Telefon"><br>
-        <input name="email" placeholder="Email"><br>
-        <input name="funkce" placeholder="Funkce v KŠ"><br>
-        <textarea name="zodpovednost" placeholder="Hlavní zodpovědnosti"></textarea><br>
-        <button type="submit">Vložit nového člena KŠ</button>
-    </form>
-
-    <h2>Aktuální členové</h2>
-    <ul>
-    {% for member in ks_data %}
-        <li><strong>{{ member.jmeno }}</strong> – {{ member.funkce }}<br>
-        📞 {{ member.telefon }} | ✉️ {{ member.email }}<br>
-        🧾 {{ member.zodpovednost }}<br>
-        <a href="{{ url_for('delete_member', index=loop.index0) }}">🗑 Smazat</a></li>
-    {% else %}
-        <li>Žádní členové</li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
-
+        <label>Jméno</label>
+        <input name="jmeno" required>
+        <label>Telefon</label>
+        <input name="telefon">
+        <label>Email</label>
+        <input name="email">
+        <label>Funkce v KŠ</label>
+        <input name="funkce">
+        <label>Hlavní zodpovědnosti</label>
+        <textarea name="zodpovednost" rows="3"></textarea>
+        <button
