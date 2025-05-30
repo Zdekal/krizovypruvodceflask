@@ -61,13 +61,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for i, member in ks_data|enumerate %}
+                {% for member in ks_data %}
                 <tr>
-                    <td><input name="jmeno_{{ i }}" value="{{ member.jmeno }}"></td>
-                    <td><input name="telefon_{{ i }}" value="{{ member.telefon }}"></td>
-                    <td><input name="email_{{ i }}" value="{{ member.email }}"></td>
-                    <td><input name="funkce_{{ i }}" value="{{ member.funkce }}"></td>
-                    <td><textarea name="zodpovednost_{{ i }}">{{ member.zodpovednost }}</textarea></td>
+                    <td><input name="jmeno_{{ loop.index0 }}" value="{{ member.jmeno }}"></td>
+                    <td><input name="telefon_{{ loop.index0 }}" value="{{ member.telefon }}"></td>
+                    <td><input name="email_{{ loop.index0 }}" value="{{ member.email }}"></td>
+                    <td><input name="funkce_{{ loop.index0 }}" value="{{ member.funkce }}"></td>
+                    <td><textarea name="zodpovednost_{{ loop.index0 }}">{{ member.zodpovednost }}</textarea></td>
                 </tr>
                 {% endfor %}
             </tbody>
