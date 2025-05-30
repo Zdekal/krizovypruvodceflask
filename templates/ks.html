@@ -6,91 +6,50 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
+            margin: 2em;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
         th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
-        input, textarea {
+        input[type="text"] {
             width: 100%;
-            border: none;
-            resize: none;
-            font-family: inherit;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
+            box-sizing: border-box;
         }
     </style>
-    <script>
-        function addRow() {
-            const table = document.getElementById("ks-table").getElementsByTagName('tbody')[0];
-            const rowCount = table.rows.length;
-            const row = table.insertRow();
-            const fields = ["jmeno", "telefon", "email", "funkce", "zodpovednost"];
-            for (let i = 0; i < fields.length; i++) {
-                const cell = row.insertCell();
-                if (fields[i] === "zodpovednost") {
-                    cell.innerHTML = `<textarea name="${fields[i]}_${rowCount}"></textarea>`;
-                } else {
-                    cell.innerHTML = `<input name="${fields[i]}_${rowCount}" />`;
-                }
-            }
-        }
-    </script>
 </head>
 <body>
     <h1>Členové krizového štábu</h1>
-
-    <form method="post" action="/update">
-        <table id="ks-table">
-            <thead>
-                <tr>
-                    <th>Jméno</th>
-                    <th>Telefon</th>
-                    <th>Email</th>
-                    <th>Funkce v KŠ</th>
-                    <th>Hlavní zodpovědnosti</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for member in ks_data %}
-                <tr>
-                    <td><input name="jmeno_{{ loop.index0 }}" value="{{ member.jmeno }}"></td>
-                    <td><input name="telefon_{{ loop.index0 }}" value="{{ member.telefon }}"></td>
-                    <td><input name="email_{{ loop.index0 }}" value="{{ member.email }}"></td>
-                    <td><input name="funkce_{{ loop.index0 }}" value="{{ member.funkce }}"></td>
-                    <td><textarea name="zodpovednost_{{ loop.index0 }}">{{ member.zodpovednost }}</textarea></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="button" onclick="addRow()">➕ Přidat člena</button>
-        <button type="submit">💾 Uložit změny</button>
-    </form>
-    <button onclick="window.print()">🖨️ Tisk / Uložit jako PDF</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Funkce v KŠ</th>
+                <th>Hlavní zodpovědnosti</th>
+                <th>Jméno</th>
+                <th>Telefon</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in ks_data %}
+            <tr>
+                <td>{{ member['Funkce v KŠ'] }}</td>
+                <td>{{ member['Hlavní zodpovědnosti'] }}</td>
+                <td>{{ member['Jméno'] }}</td>
+                <td>{{ member['Telefon'] }}</td>
+                <td>{{ member['Email'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
