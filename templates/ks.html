@@ -75,7 +75,8 @@
                 </tr>
             </thead>
             <tbody>
-                {% for i, member in enumerate(ks_data) %}
+                {% for member in ks_data %}
+                {% set i = loop.index0 %}
                 <tr>
                     <td><input name="jmeno_{{ i }}" value="{{ member.jmeno }}"></td>
                     <td><input name="telefon_{{ i }}" value="{{ member.telefon }}"></td>
