@@ -6,62 +6,49 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: auto;
             padding: 20px;
         }
-        h1, h2 {
+        h1 {
             text-align: center;
-        }
-        form, table {
-            width: 100%;
             margin-bottom: 30px;
         }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 15px;
-            margin-top: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
         table {
+            width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
         }
-        .actions {
-            display: flex;
-            gap: 10px;
+        th {
+            background-color: #f2f2f2;
+        }
+        input, textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-family: inherit;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <h1>Členové krizového štábu</h1>
 
-    <form method="post">
-        <input name="jmeno" placeholder="Jméno" required>
-        <input name="telefon" placeholder="Telefon">
-        <input name="email" placeholder="Email">
-        <input name="funkce" placeholder="Funkce v KŠ">
-        <textarea name="zodpovednost" placeholder="Hlavní zodpovědnosti"></textarea>
-        <button type="submit">Vložit nového člena KŠ</button>
-    </form>
-
-    <h2>Aktuální členové</h2>
-    {% if ks_data %}
     <form method="post" action="/update">
         <table>
             <thead>
@@ -69,23 +56,18 @@
                     <th>Jméno</th>
                     <th>Telefon</th>
                     <th>Email</th>
-                    <th>Funkce</th>
-                    <th>Zodpovědnosti</th>
-                    <th>Akce</th>
+                    <th>Funkce v KŠ</th>
+                    <th>Hlavní zodpovědnosti</th>
                 </tr>
             </thead>
             <tbody>
-                {% for member in ks_data %}
-                {% set i = loop.index0 %}
+                {% for i, member in ks_data|enumerate %}
                 <tr>
                     <td><input name="jmeno_{{ i }}" value="{{ member.jmeno }}"></td>
                     <td><input name="telefon_{{ i }}" value="{{ member.telefon }}"></td>
                     <td><input name="email_{{ i }}" value="{{ member.email }}"></td>
                     <td><input name="funkce_{{ i }}" value="{{ member.funkce }}"></td>
                     <td><textarea name="zodpovednost_{{ i }}">{{ member.zodpovednost }}</textarea></td>
-                    <td class="actions">
-                        <a href="{{ url_for('delete_member', index=i) }}">🗑 Smazat</a>
-                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -93,8 +75,5 @@
         <button type="submit">💾 Uložit změny</button>
     </form>
     <button onclick="window.print()">🖨️ Tisk / Uložit jako PDF</button>
-    {% else %}
-        <p>Žádní členové</p>
-    {% endif %}
 </body>
 </html>
