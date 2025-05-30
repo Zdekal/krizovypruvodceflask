@@ -1,47 +1,32 @@
-from flask import Flask, render_template, request, redirect, url_for
-import json
+from flask import Flask, render_template, request, redirect
+import pandas as pd
 import os
 
 app = Flask(__name__)
-KS_FILE = "ks.json"
 
-def load_ks():
-    if os.path.exists(KS_FILE):
-        with open(KS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+# Načtení tabulky bez prázdných řádků
+DATA_FILE = "KŠ.xlsx"
+ks_df = pd.read_excel(DATA_FILE)
+ks_df.dropna(how='all', inplace=True)
+ks_df = ks_df.fillna("")
 
-def save_ks(ks_data):
-    with open(KS_FILE, "w", encoding="utf-8") as f:
-        json.dump(ks_data, f, indent=2, ensure_ascii=False)
-
-@app.route("/")
-def index():
-    return redirect(url_for("krizovy_stab"))
-
-@app.route("/ks", methods=["GET", "POST"])
+@app.route("/ks", methods=["GET"])
 def krizovy_stab():
-    ks_data = load_ks()
-    if request.method == "POST":
-        new_member = {
-            "jmeno": request.form["jmeno"],
-            "telefon": request.form["telefon"],
-            "email": request.form["email"],
-            "funkce": request.form["funkce"],
-            "zodpovednost": request.form["zodpovednost"]
-        }
-        ks_data.append(new_member)
-        save_ks(ks_data)
-        return redirect(url_for("krizovy_stab"))
+    ks_data = ks_df.to_dict(orient='records')
     return render_template("ks.html", ks_data=ks_data)
 
-@app.route("/ks/delete/<int:index>")
-def delete_member(index):
-    ks_data = load_ks()
-    if 0 <= index < len(ks_data):
-        ks_data.pop(index)
-        save_ks(ks_data)
-    return redirect(url_for("krizovy_stab"))
+@app.route("/save", methods=["POST"])
+def ulozit_zmeny():
+    updated_data = {
+        'Funkce v KŠ': request.form.getlist("funkce"),
+        'Hlavní zodpovědnosti': request.form.getlist("zodpovednosti"),
+        'Jméno': request.form.getlist("jmeno"),
+        'Telefon': request.form.getlist("telefon"),
+        'Email': request.form.getlist("email"),
+    }
+    df = pd.DataFrame(updated_data)
+    df.to_excel(DATA_FILE, index=False)
+    return redirect("/ks")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+    app.run(debug=True)
