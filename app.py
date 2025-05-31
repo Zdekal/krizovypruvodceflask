@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
 import os
@@ -71,9 +72,17 @@ def register():
 
 
 @app.route('/dashboard')
-@app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html', username=session['username'])
 
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
