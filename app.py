@@ -12,13 +12,17 @@ PROJECTS_FILE = 'projects.json'
 
 def load_users():
     if not os.path.exists(USERS_FILE):
+        print("DEBUG: Soubor users.json neexistuje.")
         return {}
     with open(USERS_FILE, 'r') as f:
         data = json.load(f)
+        print("DEBUG: Typ users =", type(data))
+        print("DEBUG: Obsah users =", data)
         if isinstance(data, list):
-            # převod seznamu na slovník podle username
+            print("DEBUG: Převádím list na dict.")
             return {u['username']: u for u in data}
         return data
+
 
 
 def save_users(users):
