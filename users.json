@@ -1,24 +1,22 @@
-[
-    {
-        "username": "admin",
-        "password": "admin123",
-        "first_name": "Admin",
-        "last_name": "Uživatel",
-        "email": "admin@example.com",
-        "phone": "+420000000000",
-        "organization": "Správa",
-        "is_approved": true,
-        "is_admin": true
-    },
-    {
-        "username": "jnovak",
-        "password": "tajneheslo",
-        "first_name": "Jan",
-        "last_name": "Novák",
-        "email": "jan@example.com",
-        "phone": "+420123456789",
-        "organization": "ZŠ Praha",
-        "is_approved": false,
-        "is_admin": false
-    }
-]
+{
+  "admin": {
+    "password": "admin123",
+    "first_name": "Admin",
+    "last_name": "Uživatel",
+    "email": "admin@example.com",
+    "phone": "+420000000000",
+    "organization": "Správa",
+    "is_approved": true,
+    "is_admin": true
+  },
+  "jnovak": {
+    "password": "tajneheslo",
+    "first_name": "Jan",
+    "last_name": "Novák",
+    "email": "jan@example.com",
+    "phone": "+420123456789",
+    "organization": "ZŠ Praha",
+    "is_approved": false,
+    "is_admin": false
+  }
+}
