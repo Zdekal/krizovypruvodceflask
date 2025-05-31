@@ -1,128 +1,78 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from werkzeug.security import generate_password_hash, check_password_hash
+
+from flask import Flask, render_template, request, redirect, session, url_for
 import json
 import os
 
 app = Flask(__name__)
-app.secret_key = 'tajny_klic'
+app.secret_key = 'tajnyklic'
 
 USERS_FILE = 'users.json'
 PROJECTS_FILE = 'projects.json'
 
-
 def load_users():
     if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
+        with open(USERS_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}
-
 
 def save_users(users):
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=4)
-
-
-def load_projects():
-    if os.path.exists(PROJECTS_FILE):
-        with open(PROJECTS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-
-def save_projects(projects):
-    with open(PROJECTS_FILE, 'w') as f:
-        json.dump(projects, f, indent=4)
-
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(users, f, ensure_ascii=False, indent=4)
 
 @app.route('/')
-def home():
-    if 'username' in session:
-        return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        users = load_users()
-
-        if username in users:
-            flash('Uživatelské jméno je již obsazené.')
-            return redirect(url_for('register'))
-
-        users[username] = {
-            'password': generate_password_hash(password),
-            'projects': []
-        }
-        save_users(users)
-        flash('Registrace úspěšná. Nyní se přihlaste.')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
-
+def index():
+    return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        users = load_users()
         username = request.form['username']
         password = request.form['password']
-
-        users = load_users()
         user = users.get(username)
-
-        if user and check_password_hash(user['password'], password):
-            session['username'] = username
+        if user and user['password'] == password:
+            session['user'] = username
             return redirect(url_for('dashboard'))
-        else:
-            flash('Neplatné přihlašovací údaje.')
-
+        return 'Neplatné přihlašovací údaje'
     return render_template('login.html')
 
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('login'))
-
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        users = load_users()
+        username = request.form['username']
+        if username in users:
+            return 'Uživatel již existuje'
+        users[username] = {
+            'password': request.form['password'],
+            'name': request.form['name'],
+            'surname': request.form['surname'],
+            'email': request.form['email'],
+            'phone': request.form.get('phone', ''),
+            'organization': request.form.get('organization', ''),
+            'approved': False
+        }
+        save_users(users)
+        return redirect(url_for('login'))
+    return render_template('register.html')
 
 @app.route('/dashboard')
 def dashboard():
-    if 'username' not in session:
+    if 'user' not in session:
         return redirect(url_for('login'))
-    username = session['username']
+    return render_template('dashboard.html', user=session['user'])
+
+@app.route('/admin/users')
+def admin_users():
+    if session.get('user') != 'admin':
+        return 'Přístup zamítnut'
     users = load_users()
-    user_projects = users[username].get('projects', [])
-    all_projects = load_projects()
-    projects = [all_projects[pid] for pid in user_projects if pid in all_projects]
-    return render_template('dashboard.html', username=username, projects=projects)
+    return render_template('admin_users.html', users=users)
 
-
-@app.route('/create_project', methods=['POST'])
-def create_project():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    title = request.form['title']
-    project_id = f"prj_{len(os.urandom(4))}_{title.replace(' ', '_')}"
-    username = session['username']
-
-    projects = load_projects()
-    projects[project_id] = {
-        'title': title,
-        'owner': username,
-        'shared_with': [],
-        'data': {}
-    }
-    save_projects(projects)
-
-    users = load_users()
-    users[username]['projects'].append(project_id)
-    save_users(users)
-
-    return redirect(url_for('dashboard'))
-
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
