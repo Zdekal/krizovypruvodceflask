@@ -71,4 +71,9 @@ def register():
 
 
 @app.route('/dashboard')
-def dashboa
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('dashboard.html', username=session['username'])
+
