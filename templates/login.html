@@ -2,20 +2,99 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Přihlášení</title>
+    <title>Přihlášení – Krizový průvodce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 2em 3em;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #003366;
+            margin-bottom: 1.5em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.8em;
+            margin-bottom: 1.2em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8em;
+            background-color: #004080;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #002d5a;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1em;
+            font-size: 0.9em;
+        }
+
+        .register-link a {
+            color: #004080;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Přihlášení do Krizového průvodce</h1>
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-    <form method="post">
-        <label>Uživatelské jméno:</label>
-        <input type="text" name="username"><br>
-        <label>Heslo:</label>
-        <input type="password" name="password"><br>
-        <input type="submit" value="Přihlásit">
-    </form>
-    <p>Nemáte účet? <a href="/register">Zaregistrujte se</a></p>
+    <div class="login-container">
+        <h2>Přihlášení do Krizového průvodce</h2>
+        <form action="/login" method="post">
+            <label for="username">Uživatelské jméno:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Heslo:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Přihlásit se</button>
+        </form>
+        <div class="register-link">
+            Nemáte účet? <a href="/register">Zaregistrujte se</a>
+        </div>
+    </div>
 </body>
 </html>
