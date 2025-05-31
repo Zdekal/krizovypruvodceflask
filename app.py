@@ -22,8 +22,7 @@ def load_users():
             print("DEBUG: Převádím list na dict.")
             return {u['username']: u for u in data}
         return data
-
-
+        
 
 def save_users(users):
     with open(USERS_FILE, 'w') as f:
