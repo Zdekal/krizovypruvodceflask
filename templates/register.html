@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrace – Krizový průvodce</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: "Segoe UI", sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f0f4f8;
             margin: 0;
             padding: 0;
@@ -15,89 +14,81 @@
             justify-content: center;
             height: 100vh;
         }
-
-        .register-container {
-            background-color: #ffffff;
-            padding: 2em 3em;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+        .container {
+            background-color: white;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
+            max-width: 500px;
         }
-
         h2 {
             text-align: center;
-            color: #003366;
-            margin-bottom: 1.5em;
+            color: #004080;
         }
-
         label {
             display: block;
-            margin-bottom: 0.5em;
-            color: #333;
+            margin-top: 1em;
             font-weight: bold;
         }
-
-        input[type="text"],
-        input[type="password"] {
+        input {
             width: 100%;
-            padding: 0.8em;
-            margin-bottom: 1.2em;
+            padding: 0.5em;
+            margin-top: 0.5em;
+            border-radius: 4px;
             border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1em;
         }
-
         button {
+            margin-top: 1.5em;
             width: 100%;
-            padding: 0.8em;
+            padding: 0.75em;
             background-color: #004080;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 1em;
             cursor: pointer;
         }
-
-        button:hover {
-            background-color: #002d5a;
-        }
-
-        .login-link {
+        .back {
             text-align: center;
             margin-top: 1em;
-            font-size: 0.9em;
         }
-
-        .login-link a {
+        .back a {
             color: #004080;
             text-decoration: none;
-            font-weight: bold;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <h2>Registrace do Krizového průvodce</h2>
-        <form action="/register" method="post">
-            <label for="username">Uživatelské jméno:</label>
-            <input type="text" id="username" name="username" required>
+<div class="container">
+    <h2>Registrace</h2>
+    <form method="post">
+        <label for="username">Uživatelské jméno</label>
+        <input type="text" name="username" required>
 
-            <label for="password">Heslo:</label>
-            <input type="password" id="password" name="password" required>
+        <label for="password">Heslo</label>
+        <input type="password" name="password" required>
 
-            <label for="confirm_password">Potvrzení hesla:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+        <label for="name">Jméno</label>
+        <input type="text" name="name" required>
 
-            <button type="submit">Zaregistrovat se</button>
-        </form>
-        <div class="login-link">
-            Už máte účet? <a href="/login">Přihlaste se</a>
-        </div>
+        <label for="surname">Příjmení</label>
+        <input type="text" name="surname" required>
+
+        <label for="email">Email</label>
+        <input type="email" name="email" required>
+
+        <label for="phone">Telefon</label>
+        <input type="text" name="phone">
+
+        <label for="organization">Organizace (volitelně)</label>
+        <input type="text" name="organization">
+
+        <button type="submit">Zaregistrovat se</button>
+    </form>
+    <div class="back">
+        <p><a href="/">Zpět na přihlášení</a></p>
     </div>
+</div>
 </body>
 </html>
