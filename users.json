@@ -1,0 +1,13 @@
+[
+  {
+    "username": "jnovak",
+    "password": "hashed_password",
+    "first_name": "Jan",
+    "last_name": "Novák",
+    "email": "jan@example.com",
+    "phone": "+420123456789",
+    "organization": "ZŠ Praha",
+    "is_approved": false,
+    "is_admin": false
+  }
+]
