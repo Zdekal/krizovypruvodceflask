@@ -1,75 +1,128 @@
-from flask import Flask, render_template, request, redirect, session, url_for
-import pandas as pd
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+import json
 import os
 
 app = Flask(__name__)
-app.secret_key = 'tajny_klic'  # bezpečnostní klíč pro session
+app.secret_key = 'tajny_klic'
 
-# Cesta k souboru s krizovým štábem
-DATA_FILE = 'KŠ.xlsx'
+USERS_FILE = 'users.json'
+PROJECTS_FILE = 'projects.json'
 
-# Cesta k "databázi" uživatelů
-USERS_FILE = 'users.csv'
-if not os.path.exists(USERS_FILE):
-    pd.DataFrame(columns=["username", "password"]).to_csv(USERS_FILE, index=False)
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=4)
+
+
+def load_projects():
+    if os.path.exists(PROJECTS_FILE):
+        with open(PROJECTS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+
+def save_projects(projects):
+    with open(PROJECTS_FILE, 'w') as f:
+        json.dump(projects, f, indent=4)
 
 
 @app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        users = pd.read_csv(USERS_FILE)
-        username = request.form['username']
-        password = request.form['password']
-        if ((users['username'] == username) & (users['password'] == password)).any():
-            session['username'] = username
-            return redirect(url_for('dashboard'))
-        else:
-            return render_template('login.html', error='Nesprávné údaje')
-    return render_template('login.html')
+def home():
+    if 'username' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        users = pd.read_csv(USERS_FILE)
         username = request.form['username']
         password = request.form['password']
-        if username in users['username'].values:
-            return render_template('register.html', error='Uživatel již existuje')
-        else:
-            users.loc[len(users)] = [username, password]
-            users.to_csv(USERS_FILE, index=False)
-            return redirect(url_for('login'))
+
+        users = load_users()
+
+        if username in users:
+            flash('Uživatelské jméno je již obsazené.')
+            return redirect(url_for('register'))
+
+        users[username] = {
+            'password': generate_password_hash(password),
+            'projects': []
+        }
+        save_users(users)
+        flash('Registrace úspěšná. Nyní se přihlaste.')
+        return redirect(url_for('login'))
+
     return render_template('register.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        users = load_users()
+        user = users.get(username)
+
+        if user and check_password_hash(user['password'], password):
+            session['username'] = username
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Neplatné přihlašovací údaje.')
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 
 @app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html', username=session['username'])
+    username = session['username']
+    users = load_users()
+    user_projects = users[username].get('projects', [])
+    all_projects = load_projects()
+    projects = [all_projects[pid] for pid in user_projects if pid in all_projects]
+    return render_template('dashboard.html', username=username, projects=projects)
 
 
-@app.route('/ks')
-def krizovy_stab():
+@app.route('/create_project', methods=['POST'])
+def create_project():
     if 'username' not in session:
         return redirect(url_for('login'))
-    ks_df = pd.read_excel(DATA_FILE)
-    ks_df = ks_df[['Funkce v KŠ', 'Hlavní zodpovědnosti', 'Jméno', 'Telefon', 'Email']].dropna(how='all')
-    return render_template('ks.html', ks_data=ks_df.to_dict(orient='records'))
+    title = request.form['title']
+    project_id = f"prj_{len(os.urandom(4))}_{title.replace(' ', '_')}"
+    username = session['username']
+
+    projects = load_projects()
+    projects[project_id] = {
+        'title': title,
+        'owner': username,
+        'shared_with': [],
+        'data': {}
+    }
+    save_projects(projects)
+
+    users = load_users()
+    users[username]['projects'].append(project_id)
+    save_users(users)
+
+    return redirect(url_for('dashboard'))
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
