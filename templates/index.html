@@ -2,17 +2,117 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Krizový průvodce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krizový průvodce – Úvod</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #004080;
+            color: white;
+            padding: 1em 2em;
+            text-align: center;
+        }
+        nav {
+            text-align: right;
+            margin-top: -3em;
+            margin-right: 2em;
+        }
+        nav a {
+            color: white;
+            margin-left: 1em;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .hero {
+            background: white;
+            padding: 4em 2em;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        .hero p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: auto;
+        }
+        .cta {
+            margin-top: 2em;
+        }
+        .cta a {
+            display: inline-block;
+            background-color: #004080;
+            color: white;
+            padding: 1em 2em;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #e6f0ff;
+            padding: 3em 1em;
+        }
+        .feature {
+            background: white;
+            margin: 1em;
+            padding: 2em;
+            border-radius: 8px;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        footer {
+            background-color: #00264d;
+            color: white;
+            text-align: center;
+            padding: 1em;
+            margin-top: 2em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Projekty</h1>
-    <a href="{{ url_for('new_project') }}">+ Nový projekt</a>
-    <ul>
-    {% for project in projects %}
-        <li><strong>{{ project.name }}</strong>: {{ project.description }}</li>
-    {% else %}
-        <li>Žádné projekty</li>
-    {% endfor %}
-    </ul>
+    <header>
+        <h1>Krizový průvodce</h1>
+        <nav>
+            <a href="/login">Přihlásit se</a>
+            <a href="/register">Registrace</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Moderní nástroj pro řízení bezpečnosti</h1>
+        <p>Vytvářejte a spravujte krizové plány, sdílejte projekty s týmem a mějte přehled o všech klíčových osobách.</p>
+        <div class="cta">
+            <a href="/register">Začít nyní</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <h2>Snadné vyplňování</h2>
+            <p>Přehledné formuláře a tabulky pro rychlé zadání údajů o akcích a krizovém štábu.</p>
+        </div>
+        <div class="feature">
+            <h2>Spolupráce v týmu</h2>
+            <p>Možnost sdílet projekty a upravovat je společně s kolegy po přihlášení.</p>
+        </div>
+        <div class="feature">
+            <h2>Automatické ukládání</h2>
+            <p>Žádné ztráty dat – vše se průběžně ukládá a je připraveno k použití i offline.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2025 Krizový průvodce. Všechna práva vyhrazena.
+    </footer>
 </body>
 </html>
