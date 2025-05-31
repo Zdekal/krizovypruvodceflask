@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Vytvořit nový projekt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #004080;
+        }
+        form {
+            background: white;
+            padding: 2em;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 1em;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.5em;
+            margin-top: 0.3em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            margin-top: 2em;
+            background-color: #004080;
+            color: white;
+            border: none;
+            padding: 0.7em 1.5em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        a {
+            display: block;
+            margin-top: 1.5em;
+            text-align: center;
+            color: #004080;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vytvořit nový projekt</h1>
+    <form method="post">
+        <label for="project_name">Název projektu</label>
+        <input type="text" id="project_name" name="project_name" required>
+
+        <label for="description">Popis (nepovinné)</label>
+        <input type="text" id="description" name="description">
+
+        <input type="submit" value="Vytvořit">
+    </form>
+    <a href="/dashboard">Zpět na přehled</a>
+</body>
+</html>
