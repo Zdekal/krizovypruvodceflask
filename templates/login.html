@@ -63,19 +63,22 @@
             background-color: #002d5a;
         }
 
-        .register-link {
+        .register-link,
+        .forgot-password {
             text-align: center;
             margin-top: 1em;
             font-size: 0.9em;
         }
 
-        .register-link a {
+        .register-link a,
+        .forgot-password a {
             color: #004080;
             text-decoration: none;
             font-weight: bold;
         }
 
-        .register-link a:hover {
+        .register-link a:hover,
+        .forgot-password a:hover {
             text-decoration: underline;
         }
     </style>
@@ -92,6 +95,9 @@
 
             <button type="submit">Přihlásit se</button>
         </form>
+        <div class="forgot-password">
+            Zapomněli jste heslo? <a href="/forgot-password">Obnovit heslo</a>
+        </div>
         <div class="register-link">
             Nemáte účet? <a href="/register">Zaregistrujte se</a>
         </div>
