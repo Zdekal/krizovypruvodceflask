@@ -13,7 +13,7 @@ ADMIN_EMAIL = 'zdenekkalvach@gmail.com'
 
 def load_users():
     if not os.path.exists(USERS_FILE):
-        return {}
+        return []
     with open(USERS_FILE, 'r') as f:
         return json.load(f)
 
@@ -51,21 +51,25 @@ def register():
             return "Hesla se neshodují."
 
         users = load_users()
-        username = email  # nebo generovat z jména
 
-        if username in users:
+        if any(u['email'] == email for u in users):
             return "Tento email je již registrován."
 
-        users[username] = {
-            'fullname': fullname,
+        user_data = {
+            'username': email,
+            'first_name': fullname.split()[0],
+            'last_name': ' '.join(fullname.split()[1:]) if len(fullname.split()) > 1 else '',
             'email': email,
+            'phone': request.form.get('phone', ''),
             'organization': organization,
-            'password': password,
-            'approved': False
+            'role': 'user',
+            'status': 'pending',
+            'password': password
         }
+        users.append(user_data)
         save_users(users)
 
-        send_email(ADMIN_EMAIL, 'Nová registrace', f'Nový uživatel čeká na schválení: {fullname}, {email}')
+        send_email(ADMIN_EMAIL, 'Nová registrace', f"Nový uživatel čeká na schválení: {fullname}, {email}")
         return "Registrace přijata. Po schválení administrátorem obdržíte přístup."
 
     return render_template('register.html')
@@ -77,11 +81,11 @@ def login():
         username = request.form['username']
         password = request.form['password']
         users = load_users()
-        user = users.get(username)
+        user = next((u for u in users if u['username'] == username), None)
 
         if not user:
             error = 'Uživatel nenalezen.'
-        elif not user.get('approved'):
+        elif user['status'] != 'approved':
             error = 'Váš účet čeká na schválení. V případě potřeby kontaktujte administrátora: zdenekkalvach@gmail.com'
         elif user['password'] != password:
             error = 'Nesprávné heslo.'
@@ -97,21 +101,36 @@ def dashboard():
         return redirect(url_for('login'))
     return f"Vítejte, {session['user']}!"
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET'])
 def admin():
-    if 'user' != 'admin@admin.cz':  # pevně daný admin účet, můžeš změnit
+    if session.get('user') != 'admin@admin.cz':
         return "Přístup zamítnut."
-
     users = load_users()
+    return render_template('admin_users.html', users=users)
 
-    if request.method == 'POST':
-        username = request.form['approve']
-        if username in users:
-            users[username]['approved'] = True
+@app.route('/admin/approve_user', methods=['POST'])
+def approve_user():
+    if session.get('user') != 'admin@admin.cz':
+        return "Přístup zamítnut."
+    username = request.form['username']
+    users = load_users()
+    for user in users:
+        if user['username'] == username:
+            user['status'] = 'approved'
             save_users(users)
-            send_email(users[username]['email'], 'Registrace schválena', 'Váš účet byl aktivován. Nyní se můžete přihlásit.')
+            send_email(user['email'], 'Registrace schválena', 'Váš účet byl aktivován. Nyní se můžete přihlásit.')
+            break
+    return redirect(url_for('admin'))
 
-    return render_template('admin.html', users=users)
+@app.route('/admin/delete_user', methods=['POST'])
+def delete_user():
+    if session.get('user') != 'admin@admin.cz':
+        return "Přístup zamítnut."
+    username = request.form['username']
+    users = load_users()
+    users = [u for u in users if u['username'] != username]
+    save_users(users)
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     app.run(debug=True)
