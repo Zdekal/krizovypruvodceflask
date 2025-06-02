@@ -3,12 +3,20 @@ import json
 import os
 import smtplib
 from email.mime.text import MIMEText
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'tajny_klic'
+app.secret_key = os.getenv('SECRET_KEY', 'tajny_klic')
 
 USERS_FILE = 'users.json'
 ADMIN_EMAIL = 'zdenekkalvach@gmail.com'
+EMAIL_USER = os.getenv('EMAIL_USER')
+EMAIL_PASS = os.getenv('EMAIL_PASS')
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.seznam.cz')
+SMTP_PORT = int(os.getenv('SMTP_PORT', 465))
 
 
 def load_users():
@@ -22,16 +30,13 @@ def save_users(users):
         json.dump(users, f, indent=4, ensure_ascii=False)
 
 def send_email(to, subject, message):
-    FROM = 'tvuj@email.cz'
-    PASSWORD = 'tvéheslo'
-    smtp_server = 'smtp.seznam.cz'
     msg = MIMEText(message)
     msg['Subject'] = subject
-    msg['From'] = FROM
+    msg['From'] = EMAIL_USER
     msg['To'] = to
 
-    with smtplib.SMTP_SSL(smtp_server, 465) as server:
-        server.login(FROM, PASSWORD)
+    with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+        server.login(EMAIL_USER, EMAIL_PASS)
         server.send_message(msg)
 
 @app.route('/')
@@ -47,8 +52,8 @@ def register():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
-        if password != confirm_password:
-            return "Hesla se neshodují."
+        if password != confirm_password or len(password) < 8 or '@' not in email:
+            return "Hesla se neshodují nebo údaje nejsou platné."
 
         users = load_users()
 
@@ -64,7 +69,7 @@ def register():
             "organization": organization,
             "role": "user",
             "status": "pending",
-            "password": password
+            "password": generate_password_hash(password)
         }
         users.append(user_data)
         save_users(users)
@@ -87,11 +92,14 @@ def login():
             error = 'Uživatel nenalezen.'
         elif user['status'] != 'approved':
             error = 'Váš účet čeká na schválení. V případě potřeby kontaktujte administrátora: zdenekkalvach@gmail.com'
-        elif user['password'] != password:
+        elif not check_password_hash(user['password'], password):
             error = 'Nesprávné heslo.'
         else:
             session['user'] = username
-            return redirect(url_for('dashboard'))
+            if user['role'] == 'admin':
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('dashboard'))
 
     return render_template('login.html', error=error)
 
