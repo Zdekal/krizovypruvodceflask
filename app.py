@@ -56,20 +56,20 @@ def register():
             return "Tento email je již registrován."
 
         user_data = {
-            'username': email,
-            'first_name': fullname.split()[0],
-            'last_name': ' '.join(fullname.split()[1:]) if len(fullname.split()) > 1 else '',
-            'email': email,
-            'phone': request.form.get('phone', ''),
-            'organization': organization,
-            'role': 'user',
-            'status': 'pending',
-            'password': password
+            "username": email,
+            "first_name": fullname.split()[0],
+            "last_name": ' '.join(fullname.split()[1:]) if len(fullname.split()) > 1 else '',
+            "email": email,
+            "phone": request.form.get("phone", ""),
+            "organization": organization,
+            "role": "user",
+            "status": "pending",
+            "password": password
         }
         users.append(user_data)
         save_users(users)
 
-        send_email(ADMIN_EMAIL, 'Nová registrace', f"Nový uživatel čeká na schválení: {fullname}, {email}")
+        send_email(ADMIN_EMAIL, "Nová registrace", f"Nový uživatel čeká na schválení: {fullname}, {email}")
         return "Registrace přijata. Po schválení administrátorem obdržíte přístup."
 
     return render_template('register.html')
@@ -133,4 +133,5 @@ def delete_user():
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
