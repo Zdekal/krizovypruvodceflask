@@ -103,6 +103,24 @@ def login():
 
     return render_template('login.html', error=error)
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        users = load_users()
+        user = next((u for u in users if u['email'] == email), None)
+
+        if user:
+            send_email(
+                email,
+                "Obnovení hesla – Krizový průvodce",
+                f"Vaše přihlašovací jméno: {user['username']}\nVaše heslo: nelze zobrazit (je uložené bezpečně). Kontaktujte administrátora pro reset."
+            )
+            return "Pokud e-mail existuje, byl odeslán další postup."
+        else:
+            return "Tento e-mail nebyl nalezen."
+    return render_template('forgot_password.html')
+
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
