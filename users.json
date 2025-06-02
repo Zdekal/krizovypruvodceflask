@@ -1,13 +1,13 @@
 [
-  {
-    "username": "admin@admin.cz",
-    "first_name": "Admin",
-    "last_name": "",
-    "email": "admin@admin.cz",
-    "phone": "",
-    "organization": "System",
-    "role": "admin",
-    "status": "approved",
-    "password": "pbkdf2:sha256:600000$7p0DHfQWOKrRw2Lw$6b8bb92c57f0f0c02f1b65a30c0ff776e458c4e6a61c7772064fe41d1dfae72c"
-  }
+    {
+        "username": "zdenekkalvach@gmail.com",
+        "first_name": "Admin",
+        "last_name": "",
+        "email": "zdenekkalvach@gmail.com",
+        "phone": "",
+        "organization": "System",
+        "role": "admin",
+        "status": "approved",
+        "password": "scrypt:32768:8:1$rCxTxsKUgeVt53iQ$38a53636dc3bf5d09a7d576aaf549b67e8134e7c871b51626a0e0198b1d842821fb73ab39177aea0b31c53209694e5b3cfa6156f9ae058804f54d8515d233797"
+    }
 ]
