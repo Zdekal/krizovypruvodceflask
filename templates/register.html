@@ -1,3 +1,4 @@
+<!-- register.html -->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -7,15 +8,14 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            margin: 0;
         }
         .container {
-            background-color: white;
+            background-color: #ffffff;
             padding: 2em;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -63,30 +63,25 @@
 <div class="container">
     <h2>Registrace</h2>
     <form method="post">
-        <label for="username">Uživatelské jméno</label>
-        <input type="text" name="username" required>
-
-        <label for="password">Heslo</label>
-        <input type="password" name="password" required>
-
-        <label for="name">Jméno</label>
-        <input type="text" name="name" required>
-
-        <label for="surname">Příjmení</label>
-        <input type="text" name="surname" required>
+        <label for="fullname">Jméno a příjmení</label>
+        <input type="text" name="fullname" required>
 
         <label for="email">Email</label>
         <input type="email" name="email" required>
 
-        <label for="phone">Telefon</label>
-        <input type="text" name="phone">
-
-        <label for="organization">Organizace (volitelně)</label>
+        <label for="organization">Organizace</label>
         <input type="text" name="organization">
+
+        <label for="password">Heslo</label>
+        <input type="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Musí obsahovat alespoň jedno velké písmeno, jedno malé písmeno, číslo a mít minimálně 8 znaků." required>
+
+        <label for="confirm_password">Opakovat heslo</label>
+        <input type="password" name="confirm_password" required>
 
         <button type="submit">Zaregistrovat se</button>
     </form>
     <div class="back">
+        <p>Po registraci Vám bude zaslán potvrzovací email. Přístup získáte po schválení administrátorem.</p>
         <p><a href="/">Zpět na přihlášení</a></p>
     </div>
 </div>
