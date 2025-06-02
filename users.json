@@ -1,11 +1,13 @@
-{
-  "username": "zdenekkalvach@gmail.com",
-  "first_name": "Admin",
-  "last_name": "",
-  "email": "zdenekkalvach@gmail.com",
-  "phone": "",
-  "organization": "",
-  "role": "admin",
-  "status": "approved",
-  "password": "<hašované_heslo>"
-}
+[
+  {
+    "username": "admin@admin.cz",
+    "first_name": "Admin",
+    "last_name": "",
+    "email": "admin@admin.cz",
+    "phone": "",
+    "organization": "System",
+    "role": "admin",
+    "status": "approved",
+    "password": "pbkdf2:sha256:600000$7p0DHfQWOKrRw2Lw$6b8bb92c57f0f0c02f1b65a30c0ff776e458c4e6a61c7772064fe41d1dfae72c"
+  }
+]
