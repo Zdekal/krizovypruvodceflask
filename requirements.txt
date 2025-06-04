@@ -4,5 +4,6 @@ flask
 flask-wtf
 pandas
 openpyxl
+psycopg2-binary
 python-dotenv
 werkzeug
