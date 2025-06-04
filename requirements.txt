@@ -3,7 +3,4 @@ flask-wtf
 pandas
 openpyxl
 python-dotenv
-flask
-pandas
-openpyxl
 werkzeug
