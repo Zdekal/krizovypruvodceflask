@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
 import smtplib
@@ -176,7 +176,7 @@ def login():
             else:
                 return redirect(url_for('dashboard'))
 
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, forgot_error=None, forgot_success=None)
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
