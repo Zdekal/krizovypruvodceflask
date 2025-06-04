@@ -1,3 +1,5 @@
+bcrypt
+gunicorn
 flask
 flask-wtf
 pandas
