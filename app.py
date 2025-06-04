@@ -275,3 +275,21 @@ def approve_user():
     return redirect(url_for('admin'))
 
 @app
+
+
+@app.route('/approve_user/<username>', methods=['POST'])
+def approve_user(username):
+    users = load_users()
+    for user in users:
+        if user['username'] == username:
+            user['status'] = 'approved'
+            break
+    save_users(users)
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/reject_user/<username>', methods=['POST'])
+def reject_user(username):
+    users = load_users()
+    users = [u for u in users if u['username'] != username]
+    save_users(users)
+    return redirect(url_for('admin_dashboard'))
