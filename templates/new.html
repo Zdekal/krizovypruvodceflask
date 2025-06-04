@@ -2,15 +2,127 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Nový projekt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přihlášení</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .forgot-password {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Nový projekt</h1>
-    <form method="post">
-        <label>Název:<br><input type="text" name="name" required></label><br><br>
-        <label>Popis:<br><textarea name="description"></textarea></label><br><br>
-        <button type="submit">Uložit</button>
-    </form>
-    <p><a href="{{ url_for('index') }}">Zpět na seznam</a></p>
+    <div class="login-container">
+        <h2>Přihlášení</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('login') }}">
+            {% if csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% endif %}
+            <input type="hidden" name="download_intent" value="true">
+            <div class="form-group">
+                <label for="username">Uživatelské jméno</label>
+                <input type="text" id="username" name="username" placeholder="Zadejte uživatelské jméno" required aria-required="true">
+            </div>
+            <div class="form-group">
+                <label for="password">Heslo</label>
+                <input type="password" id="password" name="password" placeholder="Zadejte heslo" required aria-required="true">
+            </div>
+            <button type="submit">Přihlásit se</button>
+        </form>
+        <div class="forgot-password">
+            <p><a href="#" onclick="document.getElementById('forgot-password-form').style.display='block';this.style.display='none';return false;">Zapomněli jste heslo?</a></p>
+            <form id="forgot-password-form" method="POST" action="{{ url_for('forgot_password') }}" style="display: none;">
+                {% if forgot_error %}
+                    <p class="error">{{ forgot_error }}</p>
+                {% endif %}
+                {% if forgot_success %}
+                    <p class="success">{{ forgot_success }}</p>
+                {% endif %}
+                {% if csrf_token %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% endif %}
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Zadejte váš e-mail" required aria-required="true">
+                </div>
+                <button type="submit">Odeslat odkaz na obnovu hesla</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forgotForm = document.getElementById('forgot-password-form');
+            if ({{ forgot_error|tojson }} || {{ forgot_success|tojson }}) {
+                forgotForm.style.display = 'block';
+                document.querySelector('.forgot-password a').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
