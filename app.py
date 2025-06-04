@@ -171,4 +171,109 @@ def forgot_password():
     forgot_error = None
     forgot_success = None
     if request.method == 'POST':
-        email = request.form['
+        email = request.form['email']
+        users = load_users()
+        user = next((u for u in users if u['email'] == email), None)
+
+        if not user:
+            forgot_error = 'E-mail nenalezen.'
+        else:
+            # Generování tokenu a uložení s platností 1 hodina
+            token = secrets.token_urlsafe(32)
+            expiration = time.time() + 3600  # 1 hodina
+            save_reset_token(email, token, expiration)
+
+            # Odeslání e-mailu s odkazem
+            try:
+                reset_url = url_for('reset_password', token=token, _external=True)
+                send_email(
+                    email,
+                    "Obnova hesla – Krizový průvodce",
+                    f"Pro obnovu hesla klikněte na tento odkaz: {reset_url}\nOdkaz je platný 1 hodinu."
+                )
+                forgot_success = 'Odkaz pro obnovu hesla byl odeslán na váš e-mail.'
+            except Exception as e:
+                forgot_error = f'Chyba při odesílání e-mailu: {str(e)}'
+
+    return render_template('login.html', forgot_error=forgot_error, forgot_success=forgot_success)
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    error = None
+    success = None
+    email = None
+
+    # Ověření tokenu
+    with sqlite3.connect(DATABASE) as conn:
+        c = conn.cursor()
+        c.execute('SELECT email, expiration FROM reset_tokens WHERE token = ?', (token,))
+        result = c.fetchone()
+        if result and result[1] > time.time():
+            email = result[0]
+        else:
+            error = 'Neplatný nebo vypršelý odkaz pro obnovu hesla.'
+
+    if request.method == 'POST' and email:
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            error = 'Hesla se neshodují.'
+        elif len(new_password) < 8:
+            error = 'Heslo musí mít alespoň 8 znaků.'
+        else:
+            # Aktualizace hesla uživatele
+            users = load_users()
+            for user in users:
+                if user['email'] == email:
+                    user['password'] = generate_password_hash(new_password)
+                    break
+            save_users(users)
+            # Odstranění použitého tokenu
+            delete_reset_token(email)
+            success = 'Heslo bylo úspěšně změněno. Přihlaste se.'
+
+    return render_template('reset_password.html', error=error, success=success, token=token)
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return f"Vítejte, {session['user']}!"
+
+@app.route('/admin', methods=['GET'])
+def admin():
+    if session.get('user') != 'admin@admin.cz':
+        return "Přístup zamítnut."
+    users = load_users()
+    return render_template('admin_users.html', users=users)
+
+@app.route('/admin/approve_user', methods=['POST'])
+def approve_user():
+    if session.get('user') != 'admin@admin.cz':
+        return "Přístup zamítnut."
+    username = request.form['username']
+    users = load_users()
+    for user in users:
+        if user['username'] == username:
+            user['status'] = 'approved'
+            save_users(users)
+            send_email(user['email'], 'Registrace schválena', 'Váš účet byl aktivován. Nyní se můžete přihlásit.')
+            break
+    return redirect(url_for('admin'))
+
+@app.route('/admin/delete_user', methods=['POST'])
+def delete_user():
+    if session.get('user') != 'admin@admin.cz':
+        return "Přístup zamítnut."
+    username = request.form['username']
+    with sqlite3.connect(DATABASE) as conn:
+        c = conn.cursor()
+        c.execute('DELETE FROM users WHERE username = ?', (username,))
+        conn.commit()
+    return redirect(url_for('admin'))
+
+if __name__ == '__main__':
+    init_db()  # Inicializace databáze při spuštění
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
