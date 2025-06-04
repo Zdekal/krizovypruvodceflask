@@ -276,6 +276,12 @@ def approve_user():
 
 @app.route('/reject_user/<username>', methods=['POST'])
 def reject_user(username):
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
     users = load_users()
     users = [u for u in users if u['username'] != username]
     save_users(users)
