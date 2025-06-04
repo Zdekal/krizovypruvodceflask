@@ -274,9 +274,6 @@ def approve_user():
             break
     return redirect(url_for('admin'))
 
-@app
-
-
 @app.route('/reject_user/<username>', methods=['POST'])
 def reject_user(username):
     users = load_users()
