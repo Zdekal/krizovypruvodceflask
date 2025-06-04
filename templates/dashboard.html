@@ -1,13 +1,19 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Vítejte, {{ username }}</h1>
-    <a href="/create_project">Vytvořit nový projekt</a><br>
-    <a href="/projects">Otevřít existující projekt</a><br>
-    <a href="/logout">Odhlásit se</a>
-</body>
-</html>
+@app.route('/new_project')
+def new_project():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('new_project.html')
+
+
+@app.route('/load_project')
+def load_project():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    # Zde bude načtení projektů z cloudu (např. GitHub, Firebase nebo jiné API)
+    # Prozatím statický seznam jako placeholder
+    cloud_projects = [
+        {"name": "Cvičný projekt 1", "url": "#"},
+        {"name": "Záložní projekt A", "url": "#"}
+    ]
+    return render_template('load_project.html', projects=cloud_projects)
