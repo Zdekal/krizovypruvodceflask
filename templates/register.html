@@ -71,7 +71,162 @@
 
         <label for="organization">Organizace</label>
         <input type="text" name="organization">
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrace nového uživatele</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registrace</h1>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="fullname">Celé jméno a příjmení *</label>
+                <input type="text" id="fullname" name="fullname" value="{{ fullname or request.form.fullname or '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail *</label>
+                <input type="email" id="email" name="email" value="{{ email or request.form.email or '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="organization">Organizace *</label>
+                <input type="text" id="organization" name="organization" value="{{ organization or request.form.organization or '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Telefon (nepovinné)</label>
+                <input type="tel" id="phone" name="phone" value="{{ phone or request.form.phone or '' }}" placeholder="Např. +420123456789">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Heslo *</label>
+                <input type="password" id="password" name="password" required minlength="8">
+                <small style="display: block; margin-top: 5px; color: #666;">Minimálně 8 znaků.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Potvrzení hesla *</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
+            </div>
+
+            <button type="submit" class="btn">Registrovat se</button>
+        </form>
+        <a href="{{ url_for('login') }}" class="login-link">Máte již účet? Přihlaste se</a>
+    </div>
+</body>
+</html>
         <label for="password">Heslo</label>
         <input type="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Musí obsahovat alespoň jedno velké písmeno, jedno malé písmeno, číslo a mít minimálně 8 znaků." required>
 
