@@ -5,6 +5,8 @@ import smtplib
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+import secrets
+import time
 
 load_dotenv()
 
@@ -18,6 +20,8 @@ EMAIL_PASS = os.getenv('EMAIL_PASS')
 SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.seznam.cz')
 SMTP_PORT = int(os.getenv('SMTP_PORT', 465))
 
+# Dočasné úložiště tokenů pro reset hesla
+reset_tokens = {}
 
 def load_users():
     if not os.path.exists(USERS_FILE):
@@ -105,21 +109,70 @@ def login():
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
+    forgot_error = None
+    forgot_success = None
     if request.method == 'POST':
         email = request.form['email']
         users = load_users()
         user = next((u for u in users if u['email'] == email), None)
 
-        if user:
-            send_email(
-                email,
-                "Obnovení hesla – Krizový průvodce",
-                f"Vaše přihlašovací jméno: {user['username']}\nVaše heslo: nelze zobrazit (je uložené bezpečně). Kontaktujte administrátora pro reset."
-            )
-            return "Pokud e-mail existuje, byl odeslán další postup."
+        if not user:
+            forgot_error = 'E-mail nenalezen.'
         else:
-            return "Tento e-mail nebyl nalezen."
-    return render_template('forgot_password.html')
+            # Generování tokenu a uložení s platností 1 hodina
+            token = secrets.token_urlsafe(32)
+            expiration = time.time() + 3600  # 1 hodina
+            reset_tokens[email] = {'token': token, 'expiration': expiration}
+
+            # Odeslání e-mailu s odkazem
+            try:
+                reset_url = url_for('reset_password', token=token, _external=True)
+                send_email(
+                    email,
+                    "Obnova hesla – Krizový průvodce",
+                    f"Pro obnovu hesla klikněte na tento odkaz: {reset_url}\nOdkaz je platný 1 hodinu."
+                )
+                forgot_success = 'Odkaz pro obnovu hesla byl odeslán na váš e-mail.'
+            except Exception as e:
+                forgot_error = f'Chyba při odesílání e-mailu: {str(e)}'
+
+    return render_template('login.html', forgot_error=forgot_error, forgot_success=forgot_success)
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    error = None
+    success = None
+    email = None
+
+    # Ověření tokenu
+    for e, data in reset_tokens.items():
+        if data['token'] == token and data['expiration'] > time.time():
+            email = e
+            break
+    else:
+        error = 'Neplatný nebo vypršelý odkaz pro obnovu hesla.'
+
+    if request.method == 'POST' and email:
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            error = 'Hesla se neshodují.'
+        elif len(new_password) < 8:
+            error = 'Heslo musí mít alespoň 8 znaků.'
+        else:
+            # Aktualizace hesla uživatele
+            users = load_users()
+            for user in users:
+                if user['email'] == email:
+                    user['password'] = generate_password_hash(new_password)
+                    break
+            save_users(users)
+            # Odstranění použitého tokenu
+            reset_tokens.pop(email, None)
+            success = 'Heslo bylo úspěšně změněno. Přihlaste se.'
+
+    return render_template('reset_password.html', error=error, success=success, token=token)
 
 @app.route('/dashboard')
 def dashboard():
