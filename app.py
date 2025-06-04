@@ -276,6 +276,10 @@ def approve_user():
 
 @app.route('/reject_user/<username>', methods=['POST'])
 def reject_user(username):
+    users = load_users()
+    users = [u for u in users if u['username'] != username]
+    save_users(users)
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/favicon.ico')
 def favicon():
