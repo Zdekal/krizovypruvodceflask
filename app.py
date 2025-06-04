@@ -39,6 +39,18 @@ def init_db():
             token TEXT,
             expiration REAL
         )''')
+        # Import dat z users.json, pokud tabulka users je prázdná
+        c.execute('SELECT COUNT(*) FROM users')
+        if c.fetchone()[0] == 0 and os.path.exists('users.json'):
+            import json
+            with open('users.json', 'r') as f:
+                users = json.load(f)
+            for user in users:
+                c.execute('''INSERT INTO users 
+                    (username, first_name, last_name, email, phone, organization, role, status, password)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                    (user['username'], user['first_name'], user['last_name'], user['email'],
+                     user['phone'], user['organization'], user['role'], user['status'], user['password']))
         conn.commit()
 
 def load_users():
@@ -246,7 +258,7 @@ def admin():
     if session.get('user') != 'admin@admin.cz':
         return "Přístup zamítnut."
     users = load_users()
-    return render_template('admin_users.html', users=users)
+    return render_template('admin.html', users=users)
 
 @app.route('/admin/approve_user', methods=['POST'])
 def approve_user():
@@ -262,18 +274,4 @@ def approve_user():
             break
     return redirect(url_for('admin'))
 
-@app.route('/admin/delete_user', methods=['POST'])
-def delete_user():
-    if session.get('user') != 'admin@admin.cz':
-        return "Přístup zamítnut."
-    username = request.form['username']
-    with sqlite3.connect(DATABASE) as conn:
-        c = conn.cursor()
-        c.execute('DELETE FROM users WHERE username = ?', (username,))
-        conn.commit()
-    return redirect(url_for('admin'))
-
-if __name__ == '__main__':
-    init_db()  # Inicializace databáze při spuštění
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
+@app
