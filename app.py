@@ -116,6 +116,10 @@ def validate_email(email):
 
 @app.route('/')
 def index():
+    # Automaticky přihlásí administrátora pro localhost
+    if request.remote_addr == '127.0.0.1':
+        session['user'] = 'zdenekkalvach@gmail.com'
+        return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -239,7 +243,7 @@ def reset_password(token):
 def dashboard():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return f"Vítejte, {session['user']}!"
+    return render_template('dashboard.html', username=session['user'])
 
 @app.route('/logout')
 def logout():
