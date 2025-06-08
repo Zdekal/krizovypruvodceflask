@@ -1,0 +1,40 @@
+import sqlite3
+
+# Název souboru databáze
+DATABASE = 'users.db'
+
+def init_db():
+    """Inicializace databáze a vytvoření tabulek."""
+    with sqlite3.connect(DATABASE) as conn:
+        c = conn.cursor()
+        
+        # Vytvoření tabulky pro uživatele
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            first_name TEXT,
+            last_name TEXT,
+            email TEXT UNIQUE,
+            phone TEXT,
+            organization TEXT,
+            role TEXT,
+            status TEXT,
+            password TEXT
+        )
+        ''')
+        
+        # Vytvoření tabulky pro resetovací tokeny hesla
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS reset_tokens (
+            email TEXT PRIMARY KEY,
+            token TEXT,
+            expiration REAL
+        )
+        ''')
+        
+        print("Databáze `users.db` byla úspěšně inicializována.")
+        conn.commit()
+
+# Spuštění inicializace databáze
+if __name__ == "__main__":
+    init_db()
